@@ -5,18 +5,18 @@ from time import sleep_ms
 pwm_pin = Pin(28)
 
 # パラメータ設定
-period = 20 #ms
-min_pulse = 0.5 #ms pulse @ −90 deg
-max_pulse = 2.4 #ms pulse @ +90 deg
+period = 20 #ms(周期)
+min_pulse, min_deg = 0.5, -90 #ms(パルス幅), −90 deg
+max_pulse, max_deg = 2.4,  90 #ms(パルス幅), +90 deg
 
 # サーボモータ定義
 servo = PWM(pwm_pin)
-servo.freq(1/period*1000)
+servo.freq(int(1/period*1000))
 duty_base = 65535/period
 
 # 関数定義
 def rotate_servo(deg):
-    pulse = min_pulse+(max_pulse-min_pulse)*((deg+90)/180)
+    pulse = min_pulse+(max_pulse-min_pulse)*((deg-min_deg)/(max_deg-min_deg))
     servo.duty_u16(int(duty_base * pulse))
 
 # Main loop
@@ -31,6 +31,5 @@ try:
         rotate_servo(-85)
         sleep_ms(1000)
 
-    
 except KeyboardInterrupt:
     print('finish')
