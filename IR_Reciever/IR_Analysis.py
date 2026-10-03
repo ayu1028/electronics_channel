@@ -41,44 +41,6 @@ def scanSignal():
         
     print(data)
     return data
-    
-def detect_ir_format(signal):
-    print(f"総データ数: {len(signal)}\n")
-    
-    # 許容誤差（±30%程度を許容）
-    def is_match(val, target, tolerance=0.3):
-        return target * (1 - tolerance) <= val <= target * (1 + tolerance)
-
-    i = 0
-    frame_index = 1
-    
-    # 配列の中からON/OFFのペアを順番にスキャン
-    while i < len(signal) - 1:
-        mark = signal[i]     # ONの時間
-        space = signal[i+1]  # OFFの時間
-        
-        format_name = None
-        
-        # リーダーコードの判定
-        # 1. NECフォーマット: Leader ON 9000us, OFF 4500us
-        if is_match(mark, 9000) and is_match(space, 4500):
-            format_name = "NEC"
-        # 2. AEHA(家電協)フォーマット: Leader ON 3400us, OFF 1700us
-        elif is_match(mark, 3400) and is_match(space, 1700):
-            format_name = "AEHA"
-        # 3. SONYフォーマット: Leader ON 2400us, OFF 600us
-        elif is_match(mark, 2400) and is_match(space, 600):
-            format_name = "SONY"
-            
-        # フォーマットが特定できた場合のみ出力
-        if format_name:
-            print(f"▼ フレーム {frame_index} (配列インデックス {i}〜{i+1})")
-            print(f"リーダーコード: ON={mark}us, OFF={space}us")
-            print(f"推測フォーマット: 【 {format_name} 】\n")
-            frame_index += 1
-            
-        # 次のON/OFFペアへ進む
-        i += 2
 
 def analyze_complex_ir_signal(signal):
     print(f"総データ数: {len(signal)}\n")
@@ -170,7 +132,6 @@ try:
     while True:
         signal = scanSignal()
         if len(signal) > 5:
-#             detect_ir_format(signal)
             analyze_complex_ir_signal(signal)
             write_data(signal)
         else:
